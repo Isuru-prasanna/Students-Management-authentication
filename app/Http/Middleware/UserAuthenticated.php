@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
+
+class UserAuthenticated
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        if( Auth::check() )
+        {
+            /** @var User $user */
+            $user = Auth::user();
+            // if user is not admin take him to his dashboard
+            if(auth()->user()){
+            if ( $user->hasRole('user') ) {
+                return $next($request);
+            }else{
+                return back();
+            }
+        }else{
+            return back();
+        }
+            
+        }
+
+        abort(403);  // permission denied error
+    }
+}
+
